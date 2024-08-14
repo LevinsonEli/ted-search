@@ -1,0 +1,36 @@
+services:
+
+  memcached:
+    image: memcached:alpine3.20
+    container_name: memcached
+    ports:
+    - "11211:11211"
+    networks:
+      - backend
+      
+  ted-search-app:
+    image: ted-search:1.0
+    container_name: ted-search-app
+    ports:
+      - "9191:9191"
+    environment:
+      - SPRING_CONFIG_LOCATION=/app/application.properties
+    networks:
+      - frontend
+      - backend
+
+  nginx:
+    image: nginx:stable-alpine3.19
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/resources/static:/usr/share/nginx/html
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
